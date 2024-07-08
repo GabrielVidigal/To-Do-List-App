@@ -1,9 +1,10 @@
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import todo_icon from '../assets/todo_icon.png'
 import TodoItens from './TodoItens'
 
 const Todo = () => {
-  const [todoList, setTodoList] = useState([])
+  const [todoList, setTodoList] = useState(localStorage.getItem("todos")
+  ? JSON.parse(localStorage.getItem("todos")) : [])
 
   const inputRef = useRef();
   const add = () => {
@@ -28,6 +29,21 @@ const Todo = () => {
     })
   }
 
+  const toggle = (id) => {
+    setTodoList((prevTodos)=> {
+      return prevTodos.map((todo)=> {
+        if(todo.id === id){
+          return {...todo, isComplete: !todo.isComplete}
+        }
+        return todo;
+      })
+    })
+  }
+
+  useEffect(()=>{
+    localStorage.setItem("todos", JSON.stringify(todoList))
+  }, [todoList])
+
   return (
     <div className='bg-white place-self-center w-11/12 max-w-md flex flex-col p-7 min-h-[550px] rounded-xl'>
 
@@ -46,7 +62,7 @@ const Todo = () => {
       <div>
         {todoList.map((item, index) => {
           return <TodoItens key={index} text={item.text} id={item.id} 
-          isComplete={item.isComplete} deleteTodo={deleteTodo} />
+          isComplete={item.isComplete} deleteTodo={deleteTodo} toggle={toggle}/>
         })}
       </div>
     </div>
